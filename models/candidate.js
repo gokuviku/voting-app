@@ -8,19 +8,31 @@ const candidateSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        unique: true,
         required: true,
     },
 
     party: {
         type: String,
-        unique: true
-
+        required: true,
     },
 
-    votes: {
-        type: Number,
-        default: 0
+    votes: [
+        {
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+            votedAt:{
+                type: Date,
+                default: Date.now()
+            }
+        }
+    ],
+
+    voteCount:{
+        type:Number,
+        default:0,
     }
 
 

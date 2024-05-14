@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
         enum: ['cheif', 'waitor', 'manager'],
         required: true,
     },
-    aadharCard: {
+    aadharCardNumber: {
         type: Number,
         required:true,
         unique:true,
