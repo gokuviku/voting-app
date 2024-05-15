@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('./../models/user')
-const { generateToken } = require('./../utils/jwt')
+const { jwtAuthMiddleWare, generateToken } = require('./../utils/jwt')
 
 router.post('/signup', async (req, res) => {
     try {
@@ -31,13 +31,16 @@ router.post('/signup', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const {aadharCardNumber , password} = req.body;
-        const user = await User.findOne({aadharCardNumber:aadharCardNumber});
+        const { aadharCardNumber, password } = req.body;
+        const user = await User.findOne({ aadharCardNumber: aadharCardNumber });
 
+        if (!user || (await user.copmarePassword(password))) {
+            return res.status(401).json({ error: "invalid credentials" });
+        }
 
         const paylod = {
             id: response._id,
-            username:user.name
+            username: user.name
         }
 
         console.log(JSON.stringify(paylod));
@@ -51,5 +54,43 @@ router.post('/login', async (req, res) => {
 
         res.status(500).json({ error: "server error" });
 
+    }
+})
+
+
+router.get('/profile', async (req, res) => {
+    try {
+        const userData = req.user;
+        const userId = userData.id;
+        const user = await User.findById(userId)
+
+        res.status(200).json({ user: user })
+
+    } catch (err) {
+        console.log('error', err);
+        res.status.json({error:"server error"})
+
+    }
+})
+
+router.put('/profile/password',jwtAuthMiddleWare, async(req,res)=>{
+    try {
+        const userId = req.user
+        const {currentPassword,newPassword} = req.body;
+        const user = await User.findOne({ userId });
+
+        if (!user || (await user.copmarePassword(currentPassword))) {
+            return res.status(401).json({ error: "invalid credentials" });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        console.log('password updated successfully');
+        res.status(200).json({message: "password updated"})
+        
+    } catch (error) {
+        console.log('error',error);
+        
     }
 })
