@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('./../models/user')
-const { jwtAuthMiddleWare, generateToken } = require('./../utils/jwt')
+const { jwtAuthMiddleware, generateToken } = require('./../utils/jwt')
 
 router.post('/signup', async (req, res) => {
     try {
@@ -73,13 +73,15 @@ router.get('/profile', async (req, res) => {
     }
 })
 
-router.put('/profile/password',jwtAuthMiddleWare, async(req,res)=>{
-    try {
-        const userId = req.user
-        const {currentPassword,newPassword} = req.body;
-        const user = await User.findOne({ userId });
 
-        if (!user || (await user.copmarePassword(currentPassword))) {
+
+router.put('/profile/password', jwtAuthMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(userId);
+
+        if (!user || !(await user.comparePassword(currentPassword))) {
             return res.status(401).json({ error: "invalid credentials" });
         }
 
@@ -87,10 +89,10 @@ router.put('/profile/password',jwtAuthMiddleWare, async(req,res)=>{
         await user.save();
 
         console.log('password updated successfully');
-        res.status(200).json({message: "password updated"})
-        
+        res.status(200).json({ message: "password updated" });
+
     } catch (error) {
-        console.log('error',error);
-        
+        console.log('error', error);
+        res.status(500).json({ error: "server error" });
     }
-})
+});

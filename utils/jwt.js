@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-required('dotenv').config();
+require('dotenv').config();
 
 
 // Secret key for signing JWT tokens
@@ -33,3 +33,6 @@ const generateToken = (payload, expiresIn = '1h') => {
 // const user = { id: 123, username: 'example_user' };
 // const token = generateToken(user);
 // console.log('Generated JWT token:', token);
+
+
+module.exports = {jwtAuthMiddleware,generateToken}
