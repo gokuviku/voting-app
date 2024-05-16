@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
+required('dotenv').config();
+
 
 // Secret key for signing JWT tokens
-const JWT_SECRET = 'SECRET_KEY'; // You should keep this secret key secure, preferably in environment variables
+const JWT_SECRET = 'JWT_SECRET_KEY'; // You should keep this secret key secure, preferably in environment variables
 
 // Middleware to authenticate JWT tokens
 const jwtAuthMiddleware = (req, res, next) => {
